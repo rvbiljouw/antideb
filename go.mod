@@ -1,3 +1,3 @@
-module github.com/biter777/antideb
+module github.com/rvbiljouw/antideb
 
 go 1.15
