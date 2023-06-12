@@ -5,34 +5,6 @@ import (
 	"unsafe"
 )
 
-func goDetectVDSO() {
-	go func() {
-		select {
-		case <-startCh:
-		case <-startVDSO:
-		case <-time.After(time.Second * 5):
-		}
-		r := DetectVDSO()
-		total += *(*uint64)(unsafe.Pointer(&r)) & 1
-		resVDSO <- r
-		close(resVDSO)
-	}()
-}
-
-func goDetectNoASLR() {
-	go func() {
-		select {
-		case <-startCh:
-		case <-startNoASLR:
-		case <-time.After(time.Second * 5):
-		}
-		r := DetectNoASLR()
-		total += *(*uint64)(unsafe.Pointer(&r)) & 1
-		resNoASLR <- r
-		close(resNoASLR)
-	}()
-}
-
 func goDetectDebugEnv() {
 	go func() {
 		select {
@@ -44,20 +16,6 @@ func goDetectDebugEnv() {
 		total += *(*uint64)(unsafe.Pointer(&r)) & 1
 		resEnv <- r
 		close(resEnv)
-	}()
-}
-
-func goDetectNearHeap() {
-	go func() {
-		select {
-		case <-startCh:
-		case <-startHeap:
-		case <-time.After(time.Second * 5):
-		}
-		r := DetectNearHeap()
-		total += *(*uint64)(unsafe.Pointer(&r)) & 1
-		resHeap <- r
-		close(resHeap)
 	}()
 }
 

@@ -1,5 +1,6 @@
 // Package antideb - basic anti-debugging and anti-reverse engineering protection for your application. Performs basic detection functions such as ptrace, int3, time slots, vdso and others (don't foget to obfuscate your code).
 package antideb
+
 /*
 Usage
 
@@ -14,13 +15,8 @@ func main() {
 */
 
 /*
-#include "detect_nearheap.c"
 #include "detect_ptrace.c"
-#include "detect_vdso.c"
-#include "detect_noaslr.c"
 #include "detect_parent.c"
-#include "detect_ldhook.c"
-#include "detect_breakpoints.c"
 #include "detect_ptrace2.c"
 #include "detect_int3.c"
 */
@@ -52,10 +48,7 @@ func DetectAll(panicEnable bool) bool {
 		resPtrace = make(chan bool, 1)
 		defer close(startTotal)
 		go startDetect()
-		goDetectVDSO()
-		goDetectNoASLR()
 		goDetectDebugEnv()
-		goDetectNearHeap()
 		goDetectParent()
 		goDetectParent2()
 		goDetectInt3()
@@ -140,10 +133,7 @@ func DetectLite(panicEnable bool) bool {
 		makeCh()
 		defer close(startTotal)
 		go startDetect()
-		goDetectVDSO()
-		// goDetectNoASLR()
 		goDetectDebugEnv()
-		goDetectNearHeap()
 		// goDetectParent()
 		goDetectParent2()
 		goDetectInt3()
@@ -333,7 +323,6 @@ func makeCh() {
 func startDetect() {
 	<-startInitCh
 	close(startCh)
-	close(startVDSO)
 	close(startNoASLR)
 	close(startEnv)
 	close(startHeap)
@@ -376,34 +365,6 @@ func DetectInt3() bool {
 	return res > 0 || time.Now().Sub(startedAt) > time.Microsecond*100
 }
 
-// DetectBreakpoints - DetectBreakpoints
-func DetectBreakpoints() int {
-	res := C.detect_breakpoints()
-	return int(res)
-}
-
-// DetectLdHook - DetectLdHook
-// WARNING! Not valid results on some systems!
-func DetectLdHook() bool {
-	startedAt := time.Now()
-	res := C.detect_ldhook()
-	return res == C.RESULT_YES || time.Now().Sub(startedAt) > time.Microsecond*300
-}
-
-// DetectNoASLR - DetectNoASLR
-func DetectNoASLR() bool {
-	startedAt := time.Now()
-	res := C.detect_noaslr()
-	return res == C.RESULT_YES || time.Now().Sub(startedAt) > time.Microsecond*300
-}
-
-// DetectVDSO - DetectVDSO
-func DetectVDSO() bool {
-	startedAt := time.Now()
-	res := C.detect_vdso()
-	return res == C.RESULT_YES || time.Now().Sub(startedAt) > time.Microsecond*300
-}
-
 // DetectPtrace - DetectPtrace
 func DetectPtrace() bool {
 	startedAt := time.Now()
@@ -417,13 +378,6 @@ func detectPtrace2() bool {
 	startedAt := time.Now()
 	res := C.detect_ptrace2()
 	return res > 0 || time.Now().Sub(startedAt) > time.Microsecond*100
-}
-
-// DetectNearHeap - DetectNearHeap
-func DetectNearHeap() bool {
-	startedAt := time.Now()
-	res := C.detect_nearheap()
-	return res == C.RESULT_YES || time.Now().Sub(startedAt) > time.Microsecond*100
 }
 
 // DetectDebugEnv - DetectDebugEnv
