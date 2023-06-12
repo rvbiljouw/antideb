@@ -11,6 +11,7 @@ static void sig_handler(int sig)
 
 static int detect_int3()
 {
+#ifdef __amd64__
     debuging = 0;
     debuging++; // for optimize by compile is off
     signal(SIGTRAP, sig_handler);
@@ -21,4 +22,7 @@ static int detect_int3()
         return 0;
     }
     return 1;
+#else
+    return 0;
+#endif
 }

@@ -6,6 +6,7 @@
 
 static int detect_ptrace2()
 {
+    #ifdef __amd64__
     int ret = 0;
     asm("xorl %ebx, %ebx\n"     // %ebx = 0
         "movl %ebx, %ecx\n"     // movl %ebx, %ecx
@@ -17,4 +18,7 @@ static int detect_ptrace2()
     );
 
     return ret;
+#else
+    return 0;
+#endif
 }

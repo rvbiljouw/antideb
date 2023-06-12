@@ -7,10 +7,6 @@
 
 int aslr_active(void);
 
-#if !defined __linux__
-#error "Supported only Linux"
-#endif
-
 #if !defined __amd64__ &&   \
     !defined __aarch64__ && \
     !defined __arm__ &&     \
